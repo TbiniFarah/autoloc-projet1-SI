@@ -29,6 +29,5 @@ public class Employe {
     private RoleEmploye role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agence_id")
     private Agence agence;
 }
