@@ -1,7 +1,6 @@
-
 package tn.esprit.farahtbini4cce10.service.impls;
 
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.farahtbini4cce10.domain.Vehicule;
@@ -9,14 +8,12 @@ import tn.esprit.farahtbini4cce10.repository.IVehiculeRepository;
 import tn.esprit.farahtbini4cce10.service.IVehiculeServices;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-class VehiculeServicesImlp implements IVehiculeServices {
-
+public class VehiculeServiceImpl implements IVehiculeServices {
 
     private final IVehiculeRepository vehiculeRepository;
-
-
 
     @Override
     public Vehicule create(Vehicule vehicule) {
@@ -26,12 +23,12 @@ class VehiculeServicesImlp implements IVehiculeServices {
     @Override
     public Vehicule findById(long id) {
         return vehiculeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Véhicule introuvable avec l'id : " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Véhicule introuvable avec l'id : " + id));
     }
 
     @Override
     public List<Vehicule> findAll() {
-        return List.of();
+        return vehiculeRepository.findAll();
     }
 
     @Override
@@ -41,6 +38,10 @@ class VehiculeServicesImlp implements IVehiculeServices {
 
     @Override
     public Vehicule update(Vehicule vehicule) {
+        Long id = vehicule.getIdVehicule();
+        if (id == null || !vehiculeRepository.existsById(id)) {
+            throw new EntityNotFoundException("Véhicule introuvable avec l'id : " + id);
+        }
         return vehiculeRepository.save(vehicule);
     }
 }
