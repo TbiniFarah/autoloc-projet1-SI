@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,29 @@ public class ContratController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Contrat create(@RequestBody Contrat contrat) {
+    public Contrat create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateSignature": "2026-11-02",
+                              "montantTotal": 480.0,
+                              "valide": true,
+                              "paiements": [
+                                {
+                                  "montant": 150.0,
+                                  "datePaiement": "2026-11-02",
+                                  "modePaiement": "CARTE"
+                                },
+                                {
+                                  "montant": 330.0,
+                                  "datePaiement": "2026-11-06",
+                                  "modePaiement": "VIREMENT"
+                                }
+                              ]
+                            }
+                            """)))
+            @RequestBody Contrat contrat) {
         return contratService.create(contrat);
     }
 
@@ -61,6 +85,15 @@ public class ContratController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Contrat update(@Parameter(description = "Identifiant (contrat)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateSignature": "2026-11-02",
+                              "montantTotal": 520.0,
+                              "valide": true
+                            }
+                            """)))
             @RequestBody Contrat contrat) {
         return contratService.update(id, contrat);
     }
@@ -73,5 +106,37 @@ public class ContratController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@Parameter(description = "Identifiant (contrat)") @PathVariable Long id) {
         contratService.deleteById(id);
+    }
+
+    @Operation(summary = "Créer un contrat avec ses paiements (cascade)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Création réussie"),
+            @ApiResponse(responseCode = "400", description = "Données invalides")})
+    @PostMapping("/with-paiements")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Contrat addWithPaiements(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateSignature": "2026-11-12",
+                              "montantTotal": 480.0,
+                              "valide": true,
+                              "paiements": [
+                                {
+                                  "montant": 150.0,
+                                  "datePaiement": "2026-11-12",
+                                  "modePaiement": "CARTE"
+                                },
+                                {
+                                  "montant": 330.0,
+                                  "datePaiement": "2026-11-20",
+                                  "modePaiement": "VIREMENT"
+                                }
+                              ]
+                            }
+                            """)))
+            @RequestBody Contrat contrat) {
+        return contratService.addWithPaiements(contrat);
     }
 }

@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,23 @@ public class ReservationController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Reservation create(@RequestBody Reservation reservation) {
+    public Reservation create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateDebut": "2026-11-01",
+                              "dateFin": "2026-11-05",
+                              "statut": "CONFIRMEE",
+                              "client": {
+                                "idClient": 1
+                              },
+                              "vehicule": {
+                                "idVehicule": 1
+                              }
+                            }
+                            """)))
+            @RequestBody Reservation reservation) {
         return reservationService.create(reservation);
     }
 
@@ -61,6 +79,15 @@ public class ReservationController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Reservation update(@Parameter(description = "Identifiant (réservation)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateDebut": "2026-11-01",
+                              "dateFin": "2026-11-06",
+                              "statut": "TERMINEE"
+                            }
+                            """)))
             @RequestBody Reservation reservation) {
         return reservationService.update(id, reservation);
     }

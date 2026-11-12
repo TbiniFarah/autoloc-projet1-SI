@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,18 @@ public class AgenceController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Agence create(@RequestBody Agence agence) {
+    public Agence create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Agence Tunis Centre",
+                              "ville": "Tunis",
+                              "adresse": "12 avenue Habib Bourguiba",
+                              "telephone": "71000000"
+                            }
+                            """)))
+            @RequestBody Agence agence) {
         return agenceService.create(agence);
     }
 
@@ -61,6 +74,16 @@ public class AgenceController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Agence update(@Parameter(description = "Identifiant (agence)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Agence Tunis Centre",
+                              "ville": "Sousse",
+                              "adresse": "12 avenue Habib Bourguiba",
+                              "telephone": "71000000"
+                            }
+                            """)))
             @RequestBody Agence agence) {
         return agenceService.update(id, agence);
     }

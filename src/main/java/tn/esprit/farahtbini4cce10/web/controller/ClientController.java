@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,20 @@ public class ClientController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
+    public Client create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Ben Ali",
+                              "prenom": "Sami",
+                              "email": "sami.benali@mail.com",
+                              "telephone": "20000000",
+                              "numPermis": "P123456",
+                              "dateInscription": "2026-10-01"
+                            }
+                            """)))
+            @RequestBody Client client) {
         return clientService.create(client);
     }
 
@@ -61,6 +76,18 @@ public class ClientController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Client update(@Parameter(description = "Identifiant (client)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Ben Ali",
+                              "prenom": "Karim",
+                              "email": "sami.benali@mail.com",
+                              "telephone": "20000000",
+                              "numPermis": "P123456",
+                              "dateInscription": "2026-10-01"
+                            }
+                            """)))
             @RequestBody Client client) {
         return clientService.update(id, client);
     }

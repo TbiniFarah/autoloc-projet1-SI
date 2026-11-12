@@ -3,8 +3,13 @@ package tn.esprit.farahtbini4cce10.service.impls;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import tn.esprit.farahtbini4cce10.domain.Agence;
+import tn.esprit.farahtbini4cce10.domain.Equipement;
 import tn.esprit.farahtbini4cce10.domain.Vehicule;
 import tn.esprit.farahtbini4cce10.exception.ResourceNotFoundException;
+import tn.esprit.farahtbini4cce10.repository.IAgenceRepository;
+import tn.esprit.farahtbini4cce10.repository.IEquipementRepository;
 import tn.esprit.farahtbini4cce10.repository.IVehiculeRepository;
 import tn.esprit.farahtbini4cce10.service.IVehiculeService;
 import java.math.BigDecimal;
@@ -14,6 +19,8 @@ import java.math.BigDecimal;
 public class VehiculeServiceImpl implements IVehiculeService {
 
     private final IVehiculeRepository vehiculeRepository;
+    private final IAgenceRepository agenceRepository;
+    private final IEquipementRepository equipementRepository;
 
     @Override
     public Vehicule create(Vehicule vehicule) {
@@ -55,6 +62,58 @@ public class VehiculeServiceImpl implements IVehiculeService {
             throw new ResourceNotFoundException("Vehicule", id);
         }
         vehiculeRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Vehicule addAndAssignAgence(Vehicule vehicule, Long idAgence) {
+        if (vehicule.getIdVehicule() != null) {
+            throw new IllegalArgumentException(
+                    "Un nouveau véhicule ne doit pas avoir d'identifiant");
+        }
+        valider(vehicule);
+        for (Equipement equipement : vehicule.getEquipements()) {
+            if (equipement.getIdEquipement() != null) {
+                throw new IllegalArgumentException(
+                        "Un nouvel équipement ne doit pas avoir d'identifiant");
+            }
+            if (equipement.getLibelle() == null || equipement.getLibelle().isBlank()) {
+                throw new IllegalArgumentException("Le libellé de l'équipement est obligatoire");
+            }
+        }
+        Agence agence = agenceRepository.findById(idAgence)
+                .orElseThrow(() -> new ResourceNotFoundException("Agence", idAgence));
+        vehicule.setAgence(agence);
+        return vehiculeRepository.save(vehicule);
+    }
+
+    @Override
+    public Vehicule assignAgence(Long idVehicule, Long idAgence) {
+        Vehicule vehicule = findById(idVehicule);
+        Agence agence = agenceRepository.findById(idAgence)
+                .orElseThrow(() -> new ResourceNotFoundException("Agence", idAgence));
+        vehicule.setAgence(agence);
+        return vehiculeRepository.save(vehicule);
+    }
+
+    @Override
+    @Transactional
+    public Vehicule assignEquipement(Long idVehicule, Long idEquipement) {
+        Vehicule vehicule = findById(idVehicule);
+        Equipement equipement = equipementRepository.findById(idEquipement)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipement", idEquipement));
+        vehicule.getEquipements().add(equipement);
+        return vehiculeRepository.save(vehicule);
+    }
+
+    @Override
+    @Transactional
+    public void unassignEquipement(Long idVehicule, Long idEquipement) {
+        Vehicule vehicule = findById(idVehicule);
+        Equipement equipement = equipementRepository.findById(idEquipement)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipement", idEquipement));
+        vehicule.getEquipements().remove(equipement);
+        vehiculeRepository.save(vehicule);
     }
 
     private void valider(Vehicule vehicule) {

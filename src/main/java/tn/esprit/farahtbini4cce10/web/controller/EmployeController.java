@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,20 @@ public class EmployeController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employe create(@RequestBody Employe employe) {
+    public Employe create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Trabelsi",
+                              "prenom": "Ali",
+                              "role": "AGENT",
+                              "agence": {
+                                "idAgence": 1
+                              }
+                            }
+                            """)))
+            @RequestBody Employe employe) {
         return employeService.create(employe);
     }
 
@@ -61,6 +76,15 @@ public class EmployeController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Employe update(@Parameter(description = "Identifiant (employé)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "nom": "Trabelsi",
+                              "prenom": "Mohamed",
+                              "role": "MANAGER"
+                            }
+                            """)))
             @RequestBody Employe employe) {
         return employeService.update(id, employe);
     }

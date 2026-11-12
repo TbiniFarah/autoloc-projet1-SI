@@ -2,6 +2,8 @@ package tn.esprit.farahtbini4cce10.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,20 @@ public class MaintenanceController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Maintenance create(@RequestBody Maintenance maintenance) {
+    public Maintenance create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateDebut": "2026-12-01",
+                              "dateFin": "2026-12-03",
+                              "description": "Vidange",
+                              "vehicule": {
+                                "idVehicule": 1
+                              }
+                            }
+                            """)))
+            @RequestBody Maintenance maintenance) {
         return maintenanceService.create(maintenance);
     }
 
@@ -61,6 +76,15 @@ public class MaintenanceController {
             @ApiResponse(responseCode = "400", description = "Données invalides")})
     @PutMapping("/{id}")
     public Maintenance update(@Parameter(description = "Identifiant (maintenance)") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                            {
+                              "dateDebut": "2026-12-01",
+                              "dateFin": "2026-12-03",
+                              "description": "Changement de pneus"
+                            }
+                            """)))
             @RequestBody Maintenance maintenance) {
         return maintenanceService.update(id, maintenance);
     }
